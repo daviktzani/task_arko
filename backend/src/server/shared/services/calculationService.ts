@@ -39,14 +39,24 @@ export function calcular(x: ICarCalculation): IResult {
     const custoFinalAluguel = custoAluguel + extrasTotais;
 
     let melhorOpcao: "COMPRA_A_VISTA" | "FINANCIAMENTO" | "ALUGUEL";
-    if (custoFinalAVista < custoFinalFinanciamento && custoFinalAVista < custoFinalAluguel) {
-        melhorOpcao = "COMPRA_A_VISTA";
+    if(x.modo === "A_VISTA_vs_ALUGUEL") {
+        if(custoFinalAVista < custoFinalAluguel) {
+            melhorOpcao = "COMPRA_A_VISTA";
+        }
+        else {
+            melhorOpcao = "ALUGUEL";
+        }
     }
-    else if (custoFinalFinanciamento < custoFinalAVista && custoFinalFinanciamento < custoFinalAluguel) {
-        melhorOpcao = "FINANCIAMENTO";
+    else if(x.modo === "FINANCIAMENTO_vs_ALUGUEL") {
+        if(custoFinalFinanciamento < custoFinalAluguel) {
+            melhorOpcao = "FINANCIAMENTO";
+        }
+        else {
+            melhorOpcao = "ALUGUEL";
+        }
     }
     else {
-        melhorOpcao = "ALUGUEL";
+        throw new Error("Modo de comparação inválido");
     }
 
     return {
@@ -57,7 +67,7 @@ export function calcular(x: ICarCalculation): IResult {
         },
 
         financiamento: {
-            totalPago: Number(totalFinanciamento.toFixed(2)),
+            custoTotal: Number(totalFinanciamento.toFixed(2)),
             valorRevenda: Number(valorRevenda.toFixed(2)),
             custoReal: Number(custoFinanciamentoReal.toFixed(2)),
             parcelaFinanciamento: Number(parcelaFinanciamento.toFixed(2)),

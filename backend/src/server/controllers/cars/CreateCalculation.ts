@@ -7,7 +7,10 @@ import { StatusCodes } from "http-status-codes";
 import * as yup from 'yup';
 import { validation } from '../../shared/middleware';
 
+export type ModoComparacao = "A_VISTA_vs_ALUGUEL" | "FINANCIAMENTO_vs_ALUGUEL";
+
 interface ICarCalculation {
+    modo: ModoComparacao;
     precoCarro: number;
     entrada: number;
     taxaJurosMensal: number;
@@ -28,7 +31,7 @@ interface IResult {
     };
 
     financiamento: {
-        totalPago: number;
+        custoTotal: number;
         valorRevenda: number;
         custoReal: number;
         parcelaFinanciamento: number;
@@ -43,6 +46,7 @@ interface IResult {
 
 export const createValidation = validation((getSchema) => ({
     body: getSchema<ICarCalculation>(yup.object().shape({
+        modo: yup.mixed<"A_VISTA_vs_ALUGUEL" | "FINANCIAMENTO_vs_ALUGUEL">().oneOf(["A_VISTA_vs_ALUGUEL", "FINANCIAMENTO_vs_ALUGUEL"]).required(),
         precoCarro: yup.number().required().positive(),
         entrada: yup.number().required().positive(),
         taxaJurosMensal: yup.number().required().positive(),
