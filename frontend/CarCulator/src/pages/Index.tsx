@@ -30,21 +30,31 @@ async function calcularAPI(dados: any) {
             body: JSON.stringify(dados),
         });
 
-        const data = await response.json().catch(() => ({}));
+        const text = await response.text();
+
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch {
+            data = { raw: text };
+        }
 
         if (!response.ok) {
-            const mensagem =
+            throw new Error(
                 data?.errors?.body?.message ||
                 data?.message ||
-                "Erro ao calcular no servidor";
-
-            throw new Error(mensagem);
+                `Erro ${response.status}: ${text}`
+            );
         }
 
         return data;
+
     } catch (e: any) {
+        console.error("ERRO REAL:", e);
+
         throw new Error(
-            "Não foi possível conectar ao backend. Verifique se o servidor está rodando."
+            e.message ||
+            "Erro desconhecido ao comunicar com o backend"
         );
     }
 }
