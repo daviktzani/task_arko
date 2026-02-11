@@ -44,6 +44,8 @@ npm install
 
 #### Backend
 
+Na raiz:
+
 ```bash
 npm run dev
 ```
@@ -61,7 +63,6 @@ npm run dev
 
 #### Backend
 ```bash
-cd backend
 npx tsc
 npm start
 ```
