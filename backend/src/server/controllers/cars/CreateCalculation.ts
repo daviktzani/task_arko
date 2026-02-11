@@ -47,7 +47,7 @@ interface IResult {
 export const createValidation = validation((getSchema) => ({
     body: getSchema<ICarCalculation>(yup.object().shape({
         modo: yup.mixed<"A_VISTA_vs_ALUGUEL" | "FINANCIAMENTO_vs_ALUGUEL">().oneOf(["A_VISTA_vs_ALUGUEL", "FINANCIAMENTO_vs_ALUGUEL"]).required(),
-        precoCarro: yup.number().required().positive().integer(),
+        precoCarro: yup.number().required().positive(),
         entrada: yup.number().when("modo", {
             is: "FINANCIAMENTO_vs_ALUGUEL",
             then: (schema) => schema.required().min(0),
@@ -63,11 +63,11 @@ export const createValidation = validation((getSchema) => ({
             then: (schema) => schema.required().positive(),
             otherwise: (schema) => schema.optional(),
         }),
-        periodoAnalise: yup.number().required().min(1),
+        periodoAnalise: yup.number().required().min(1).integer(),
         aluguelMensal: yup.number().required().positive(),
-        gastoMensalCombustivel: yup.number().integer().optional(),
-        gastoMensalSeguro: yup.number().integer().optional(),
-        gastoMensalIPVA: yup.number().integer().optional(),
+        gastoMensalCombustivel: yup.number().min(1).optional(),
+        gastoMensalSeguro: yup.number().min(1).optional(),
+        gastoMensalIPVA: yup.number().min(1).optional(),
         taxaDepreciacaoMensal: yup.number().min(0).optional(),
     })),
 }));

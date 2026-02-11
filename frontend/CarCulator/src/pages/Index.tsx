@@ -44,7 +44,7 @@ async function calcularAPI(dados: any) {
         return data;
     } catch (e: any) {
         throw new Error(
-            "Não foi possível conectar ao backend. Verifique se o servidor está rodando em http://localhost:3333"
+            "Não foi possível conectar ao backend. Verifique se o servidor está rodando."
         );
     }
 }
@@ -76,10 +76,23 @@ const Index = () => {
                 return v ? Number(v.replace(",", ".")) : undefined;
             };
 
+            const int = (key: string) => {
+                const v = fd.get(key) as string;
+                if (!v) return undefined;
+
+                const n = Number(v.replace(",", "."));
+
+                if (!Number.isInteger(n)) {
+                    throw new Error("O período em meses deve ser um número inteiro");
+                }
+
+                return n;
+            };
+
             const payload = {
                 modo,
                 precoCarro: num("precoCarro")!,
-                periodoAnalise: num("periodoAnalise")!,
+                periodoAnalise: int("periodoAnalise")!,   // ← AGORA SÓ INTEIRO
                 aluguelMensal: num("aluguelMensal")!,
                 entrada: num("entrada"),
                 taxaJurosMensal:
@@ -108,7 +121,6 @@ const Index = () => {
     return (
         <div className="flex min-h-screen items-start justify-center px-4 py-12">
             <div className="w-full max-w-lg space-y-8">
-                {/* HEADER */}
                 <div className="text-center">
                     <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary">
                         <Car className="h-7 w-7 text-primary-foreground" />
@@ -123,11 +135,10 @@ const Index = () => {
                     </p>
                 </div>
 
-                {/* ESCOLHA DO MODO */}
                 {!modo && (
                     <div className="rounded-2xl border bg-card p-6 shadow-sm space-y-4">
                         <p className="text-lg font-semibold">
-                            Como você deseja realizar a compra do seu carro?
+                            Qual seria seu método de pagamento na compra do carro?
                         </p>
 
                         <div className="grid grid-cols-2 gap-3">
@@ -148,7 +159,6 @@ const Index = () => {
                     </div>
                 )}
 
-                {/* FORMULÁRIO */}
                 {modo && !result && (
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="flex justify-end">
@@ -172,22 +182,24 @@ const Index = () => {
                             <>
                                 <Field label="Valor da entrada (R$)" name="entrada" />
                                 <Field label="Taxa de juros mensal (%)" name="taxaJurosMensal" step="0.01" />
-                                <Field label="Quantidade de parcelas mensais" name="parcelas" min="1" />
+                                <Field label="Quantidade de parcelas mensais" name="parcelas" min="1" step="1" />
                             </>
                         )}
 
+                        {/* ======= CAMPO CORRIGIDO ======= */}
                         <Field
                             label="Intervalo de tempo de uso do veículo (meses)"
                             name="periodoAnalise"
                             required
                             min="1"
+                            step="1"
+                            onlyInteger
                         />
 
                         <Field
                             label="Valor do aluguel mensal (R$)"
                             name="aluguelMensal"
                             required
-                            min="1"
                         />
 
                         <Field
@@ -218,7 +230,6 @@ const Index = () => {
                     </form>
                 )}
 
-                {/* RESULTADO */}
                 {result && (
                     <div>
                         <ResultCard result={result} />
@@ -247,6 +258,7 @@ function Field({
     step = "0.01",
     placeholder,
     min = "0",
+    onlyInteger = false,
 }: {
     label: string;
     name: string;
@@ -254,6 +266,7 @@ function Field({
     step?: string;
     placeholder?: string;
     min?: string;
+    onlyInteger?: boolean;
 }) {
     return (
         <div className="space-y-1.5">
@@ -270,9 +283,16 @@ function Field({
                 step={step}
                 placeholder={placeholder}
                 required={required}
+
+                onKeyDown={(e) => {
+                    if (onlyInteger && (e.key === "." || e.key === ",")) {
+                        e.preventDefault();
+                    }
+                }}
             />
         </div>
     );
 }
 
 export default Index;
+
