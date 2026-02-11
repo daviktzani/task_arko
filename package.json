@@ -2,7 +2,7 @@
     "name": "task_arko",
     "version": "1.0.0",
     "scripts": {
-        "build": "tsc",
+        "build": "npm install && tsc",
         "start": "node backend/build/index.js",
         "dev": "ts-node-dev backend/src/index.ts"
     },
