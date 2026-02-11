@@ -7,19 +7,10 @@ import { Label } from "@/components/ui/label";
 import { ResultCard } from "@/components/ResultCard";
 import { toast } from "sonner";
 
-// ===============================
-// TIPOS
-// ===============================
 type Modo = "A_VISTA_vs_ALUGUEL" | "FINANCIAMENTO_vs_ALUGUEL";
 
-// ===============================
-// CONFIG
-// ===============================
 const API_URL = "https://taskarko-production.up.railway.app";
 
-// ===============================
-// API
-// ===============================
 async function calcularAPI(dados: any) {
     try {
         const response = await fetch(`${API_URL}/cars`, {
@@ -59,9 +50,7 @@ async function calcularAPI(dados: any) {
     }
 }
 
-// ===============================
 // COMPONENTE PRINCIPAL
-// ===============================
 const Index = () => {
     const [modo, setModo] = useState<Modo | null>(null);
     const [result, setResult] = useState<any>(null);
@@ -102,7 +91,7 @@ const Index = () => {
             const payload = {
                 modo,
                 precoCarro: num("precoCarro")!,
-                periodoAnalise: int("periodoAnalise")!,   // ← AGORA SÓ INTEIRO
+                periodoAnalise: int("periodoAnalise")!, 
                 aluguelMensal: num("aluguelMensal")!,
                 entrada: num("entrada"),
                 taxaJurosMensal:
@@ -196,7 +185,6 @@ const Index = () => {
                             </>
                         )}
 
-                        {/* ======= CAMPO CORRIGIDO ======= */}
                         <Field
                             label="Intervalo de tempo de uso do veículo (meses)"
                             name="periodoAnalise"
@@ -258,9 +246,7 @@ const Index = () => {
     );
 };
 
-// ===============================
 // COMPONENTE DE CAMPO
-// ===============================
 function Field({
     label,
     name,
