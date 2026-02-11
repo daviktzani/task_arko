@@ -2,8 +2,9 @@
     "name": "task_arko",
     "version": "1.0.0",
     "scripts": {
-        "build": "cd frontend && npm install && npm run build",
-        "start": "ts-node-dev backend/src/index.ts"
+        "build": "tsc",
+        "start": "node backend/build/index.js",
+        "dev": "ts-node-dev backend/src/index.ts"
     },
     "author": "Davi Catizani",
     "license": "MIT",
