@@ -15,7 +15,7 @@ type Modo = "A_VISTA_vs_ALUGUEL" | "FINANCIAMENTO_vs_ALUGUEL";
 // ===============================
 // CONFIG
 // ===============================
-const API_URL = "http://localhost:3333";
+const API_URL = "https://taskarko-production.up.railway.app";
 
 // ===============================
 // API
