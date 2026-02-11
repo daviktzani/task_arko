@@ -12,10 +12,10 @@ export type ModoComparacao = "A_VISTA_vs_ALUGUEL" | "FINANCIAMENTO_vs_ALUGUEL";
 interface ICarCalculation {
     modo: ModoComparacao;
     precoCarro: number;
-    entrada: number;
-    taxaJurosMensal: number;
+    entrada?: number;
+    taxaJurosMensal?: number;
     periodoAnalise: number;
-    parcelas: number;
+    parcelas?: number;
     aluguelMensal: number;
     gastoMensalCombustivel?: number;
     gastoMensalSeguro?: number;
@@ -28,14 +28,14 @@ interface IResult {
         custoTotal: number;
         valorRevenda: number;
         custoReal: number;
-    };
+    } | null;
 
     financiamento: {
         custoTotal: number;
         valorRevenda: number;
         custoReal: number;
         parcelaFinanciamento: number;
-    };
+    } | null;
 
     aluguel: {
         custoTotal: number;
@@ -47,16 +47,28 @@ interface IResult {
 export const createValidation = validation((getSchema) => ({
     body: getSchema<ICarCalculation>(yup.object().shape({
         modo: yup.mixed<"A_VISTA_vs_ALUGUEL" | "FINANCIAMENTO_vs_ALUGUEL">().oneOf(["A_VISTA_vs_ALUGUEL", "FINANCIAMENTO_vs_ALUGUEL"]).required(),
-        precoCarro: yup.number().required().positive(),
-        entrada: yup.number().required().positive(),
-        taxaJurosMensal: yup.number().required().positive(),
-        periodoAnalise: yup.number().required().positive().integer(),
-        parcelas: yup.number().required().positive().integer(),
+        precoCarro: yup.number().required().positive().integer(),
+        entrada: yup.number().when("modo", {
+            is: "FINANCIAMENTO_vs_ALUGUEL",
+            then: (schema) => schema.required().min(0),
+            otherwise: (schema) => schema.optional(),
+        }),
+        taxaJurosMensal: yup.number().when("modo", {
+            is: "FINANCIAMENTO_vs_ALUGUEL",
+            then: (schema) => schema.required().min(0),
+            otherwise: (schema) => schema.optional(),
+        }),
+        parcelas: yup.number().integer().when("modo", {
+            is: "FINANCIAMENTO_vs_ALUGUEL",
+            then: (schema) => schema.required().positive(),
+            otherwise: (schema) => schema.optional(),
+        }),
+        periodoAnalise: yup.number().required().min(1),
         aluguelMensal: yup.number().required().positive(),
-        gastoMensalCombustivel: yup.number().positive().optional(),
-        gastoMensalSeguro: yup.number().positive().optional(),
-        gastoMensalIPVA: yup.number().positive().optional(),
-        taxaDepreciacaoMensal: yup.number().positive().optional(),
+        gastoMensalCombustivel: yup.number().integer().optional(),
+        gastoMensalSeguro: yup.number().integer().optional(),
+        gastoMensalIPVA: yup.number().integer().optional(),
+        taxaDepreciacaoMensal: yup.number().min(0).optional(),
     })),
 }));
 

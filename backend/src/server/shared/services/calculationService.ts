@@ -7,24 +7,14 @@ export function calcular(x: ICarCalculation): IResult {
     let depreciacao = 0;
 
     if (x.taxaDepreciacaoMensal !== undefined) {
-        depreciacao = x.taxaDepreciacaoMensal/100;
-    } 
+        depreciacao = x.taxaDepreciacaoMensal / 100;
+    }
     else {
         depreciacao = 0.0167;
     }
 
     const valorRevenda = x.precoCarro * Math.pow(1 - depreciacao, x.periodoAnalise);
 
-    const custoAVistaReal = x.precoCarro - valorRevenda;
-
-    const valorFinanciado = x.precoCarro - x.entrada;
-
-    const parcelaFinanciamento = valorFinanciado *
-        (x.taxaJurosMensal * Math.pow(1 + x.taxaJurosMensal, x.parcelas)) /
-        (Math.pow(1 + x.taxaJurosMensal, x.parcelas) - 1);
-
-    const totalFinanciamento = parcelaFinanciamento * x.parcelas + x.entrada;
-    const custoFinanciamentoReal = totalFinanciamento - valorRevenda;
     const custoAluguel = x.aluguelMensal * x.periodoAnalise;
 
     const extrasMensais =
@@ -34,49 +24,80 @@ export function calcular(x: ICarCalculation): IResult {
 
     const extrasTotais = extrasMensais * x.periodoAnalise;
 
-    const custoFinalAVista = custoAVistaReal + extrasTotais;
-    const custoFinalFinanciamento = custoFinanciamentoReal + extrasTotais;
     const custoFinalAluguel = custoAluguel + extrasTotais;
 
     let melhorOpcao: "COMPRA_A_VISTA" | "FINANCIAMENTO" | "ALUGUEL";
-    if(x.modo === "A_VISTA_vs_ALUGUEL") {
-        if(custoFinalAVista < custoFinalAluguel) {
+    if (x.modo === "A_VISTA_vs_ALUGUEL") {
+        const custoAVistaReal = x.precoCarro - valorRevenda + extrasTotais;
+        const custoFinalAVista = x.precoCarro + extrasTotais;
+
+        if (custoAVistaReal < custoFinalAluguel) {
             melhorOpcao = "COMPRA_A_VISTA";
         }
         else {
             melhorOpcao = "ALUGUEL";
         }
+
+        return {
+            compraAVista: {
+                custoTotal: Number(custoFinalAVista.toFixed(2)),
+                valorRevenda: Number(valorRevenda.toFixed(2)),
+                custoReal: Number(custoAVistaReal.toFixed(2)),
+            },
+
+            financiamento: null,
+
+            aluguel: {
+                custoTotal: Number(custoFinalAluguel.toFixed(2)),
+            },
+
+            melhorOpcao,
+        };
     }
-    else if(x.modo === "FINANCIAMENTO_vs_ALUGUEL") {
-        if(custoFinalFinanciamento < custoFinalAluguel) {
+
+    const entrada = x.entrada!;
+    const taxa = x.taxaJurosMensal!;
+    const parcelas = x.parcelas!;
+
+    const valorFinanciado = x.precoCarro - entrada;
+
+    const parcelaFinanciamento = valorFinanciado *
+        (taxa * Math.pow(1 + taxa, parcelas)) /
+        (Math.pow(1 + taxa, parcelas) - 1);
+
+    const totalFinanciamento = parcelaFinanciamento * parcelas + entrada;
+
+    const custoFinanciamentoReal = totalFinanciamento - valorRevenda;
+
+    const custoFinalFinanciamento = custoFinanciamentoReal + extrasTotais;
+
+    if (x.modo === "FINANCIAMENTO_vs_ALUGUEL") {
+
+        if (custoFinalFinanciamento < custoFinalAluguel) {
             melhorOpcao = "FINANCIAMENTO";
         }
         else {
             melhorOpcao = "ALUGUEL";
         }
+
+        return {
+            compraAVista: null,
+
+            financiamento: {
+                custoTotal: Number(totalFinanciamento.toFixed(2)),
+                valorRevenda: Number(valorRevenda.toFixed(2)),
+                custoReal: Number(custoFinanciamentoReal.toFixed(2)),
+                parcelaFinanciamento: Number(parcelaFinanciamento.toFixed(2)),
+            },
+
+            aluguel: {
+                custoTotal: Number(custoFinalAluguel.toFixed(2)),
+            },
+
+            melhorOpcao,
+        };
     }
     else {
-        throw new Error("Modo de comparação inválido");
+        throw new Error("Modo de comparação inválida");
     }
-
-    return {
-        compraAVista: {
-            custoTotal: Number(custoFinalAVista.toFixed(2)),
-            valorRevenda: Number(valorRevenda.toFixed(2)),
-            custoReal: Number(custoAVistaReal.toFixed(2)),
-        },
-
-        financiamento: {
-            custoTotal: Number(totalFinanciamento.toFixed(2)),
-            valorRevenda: Number(valorRevenda.toFixed(2)),
-            custoReal: Number(custoFinanciamentoReal.toFixed(2)),
-            parcelaFinanciamento: Number(parcelaFinanciamento.toFixed(2)),
-        },
-
-        aluguel: {
-            custoTotal: Number(custoFinalAluguel.toFixed(2)),
-        },
-
-        melhorOpcao,
-    };
 }
