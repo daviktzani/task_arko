@@ -65,9 +65,9 @@ export const createValidation = validation((getSchema) => ({
         }),
         periodoAnalise: yup.number().required().min(1).integer(),
         aluguelMensal: yup.number().required().positive(),
-        gastoMensalCombustivel: yup.number().min(1).optional(),
-        gastoMensalSeguro: yup.number().min(1).optional(),
-        gastoMensalIPVA: yup.number().min(1).optional(),
+        gastoMensalCombustivel: yup.number().min(0).optional(),
+        gastoMensalSeguro: yup.number().min(0).optional(),
+        gastoMensalIPVA: yup.number().min(0).optional(),
         taxaDepreciacaoMensal: yup.number().min(0).optional(),
     })),
 }));
