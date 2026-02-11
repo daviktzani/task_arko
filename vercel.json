@@ -1,6 +1,11 @@
 {
-  "outputDirectory": "frontend/dist",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
+    "buildCommand": "npm --prefix frontend/CarCulator run build",
+    "outputDirectory": "frontend/CarCulator/dist",
+    "framework": "vite",
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ]
 }

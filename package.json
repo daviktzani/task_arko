@@ -2,7 +2,7 @@
     "name": "task_arko",
     "version": "1.0.0",
     "scripts": {
-        "build": "npm install && tsc",
+        "build": "npm --prefix frontend/CarCulator run build",
         "start": "node backend/build/index.js",
         "dev": "ts-node-dev backend/src/index.ts"
     },
