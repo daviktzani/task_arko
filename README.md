@@ -59,14 +59,18 @@ npm run dev
 
 ### Build para produção
 
+#### Backend
 ```bash
-npm run build
+cd backend
+npx tsc
+npm start
 ```
 
-Depois: 
+#### Frontend
 
 ```bash
-npm start
+cd frontend/CarCulator
+npm run build
 ```
 
 ## Autor
