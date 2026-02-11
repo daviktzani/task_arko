@@ -62,6 +62,9 @@ npm run dev
 ### Build para produção
 
 #### Backend
+
+Na raiz:
+
 ```bash
 npx tsc
 npm start
